@@ -141,17 +141,6 @@
         }
         .section-title i { color: var(--accent-color); }
 
-        .section-subtitle-tag {
-            font-size: 11.5px;
-            color: var(--text-muted);
-            background: rgba(255, 255, 255, 0.05);
-            padding: 4px 10px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
         /* HORIZONTAL SCROLL CAROUSEL FOR MOBILE */
         .catalog-scroll-container {
             position: relative;
@@ -589,7 +578,6 @@
 </div>
 
 <!-- 2. FULLSCREEN SHORTS OVERLAY MODAL (VIDEO BERSIH) -->
-<!-- Menggunakan flex-col: Video di atas, UI di bawah -->
 <div id="shortsOverlay">
     
     <!-- AREA VIDEO (SANGAT BERSIH) -->
@@ -647,10 +635,7 @@
 // =========================================================================
 const DEFAULT_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVYkJJbDC1TpB4TzvYFzkfp4uBzYpXaqwYIARbBvqBkbtRSqz_2Olo07_tgvkwQj-Uft3CGkUvsB47/pub?output=csv"; 
 
-const KONFIGURASI_IKLAN_SHOPEE = {
-    waktuMunculDetik: 30
-};
-
+// Data default jika spreadsheet belum diisi kolom iklan_detik
 let daftarDrama = [
     {
         id: "queen_of_tears",
@@ -659,7 +644,8 @@ let daftarDrama = [
         synopsis: "Kisah cinta dan dinamika pernikahan pewaris chaebol dan pengacara desa yang menghadapi krisis pelik bersama.",
         cover: "https://images.unsplash.com/photo-1518676599626-5cd8c2d678a2?q=80&w=400&auto=format&fit=crop",
         videoId: "7XO6zMvG00g",
-        shopeeUrl: "https://shope.ee/contoh1"
+        shopeeUrl: "https://shope.ee/contoh1",
+        iklanDetik: [10, 30] // Default: Iklan muncul di detik 10 dan 30
     },
     {
         id: "lovely_runner",
@@ -668,24 +654,17 @@ let daftarDrama = [
         synopsis: "Seorang penggemar berat kembali ke masa lalu demi menyelamatkan idola favoritnya dari tragedi masa depan.",
         cover: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400&auto=format&fit=crop",
         videoId: "S6KsSUcu3Y8",
-        shopeeUrl: "https://shope.ee/contoh2"
-    },
-    {
-        id: "vincenzo",
-        title: "Vincenzo (Full Shorts)",
-        genre: "Crime, Dark Comedy",
-        synopsis: "Seorang pengacara mafia Italia berdarah Korea kembali ke Seoul untuk merebut emas tersembunyi.",
-        cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400&auto=format&fit=crop",
-        videoId: "AgV2LU01U8U",
-        shopeeUrl: ""
+        shopeeUrl: "https://shope.ee/contoh2",
+        iklanDetik: [15] // Default: Iklan muncul di detik 15
     }
 ];
 
+// STATE MANAGEMENT
 let currentPlayingItem = null;
 let player = null;
 let isPlayerReady = false;
 let adCheckInterval = null;
-let hasAdTriggeredForCurrentEp = false;
+let iklanYangSudahMuncul = []; // Melacak iklan mana yang sudah tampil
 
 // =========================================================================
 // UTILITIES
@@ -743,18 +722,33 @@ function onPlayerStateChange(event) {
 }
 
 // =========================================================================
-// IKLAN & SHORTS LOGIC
+// LOGIKA IKLAN SHOPEE BERKALI-KALI
 // =========================================================================
 function startAdMonitor() {
     clearInterval(adCheckInterval);
+    
     adCheckInterval = setInterval(() => {
         if (player && player.getCurrentTime && currentPlayingItem && currentPlayingItem.shopeeUrl) {
             let currentTime = player.getCurrentTime();
-            if (currentTime >= KONFIGURASI_IKLAN_SHOPEE.waktuMunculDetik && !hasAdTriggeredForCurrentEp) {
-                hasAdTriggeredForCurrentEp = true;
-                if (player && player.pauseVideo) player.pauseVideo();
-                document.getElementById("adShopeeLink").href = currentPlayingItem.shopeeUrl;
-                document.getElementById("shopeeAdOverlay").style.display = "flex";
+            let jadwalIklan = currentPlayingItem.iklanDetik || []; // Ambil array jadwal iklan
+
+            // Cek apakah waktu saat ini sudah melewati salah satu jadwal iklan
+            for (let i = 0; i < jadwalIklan.length; i++) {
+                let waktuTarget = jadwalIklan[i];
+                
+                // Jika waktu video >= target, DAN iklan di target ini belum pernah muncul
+                if (currentTime >= waktuTarget && !iklanYangSudahMuncul.includes(waktuTarget)) {
+                    
+                    iklanYangSudahMuncul.push(waktuTarget); // Tandai sudah muncul
+                    
+                    if (player && player.pauseVideo) player.pauseVideo();
+                    
+                    // Tampilkan iklan
+                    document.getElementById("adShopeeLink").href = currentPlayingItem.shopeeUrl;
+                    document.getElementById("shopeeAdOverlay").style.display = "flex";
+                    
+                    break; // Hentikan loop, tampilkan satu iklan dulu
+                }
             }
         }
     }, 1000);
@@ -791,7 +785,7 @@ function openShortsPlayer(dramaId) {
     if (!drama) return;
 
     currentPlayingItem = drama;
-    hasAdTriggeredForCurrentEp = false;
+    iklanYangSudahMuncul = []; // Reset riwayat iklan setiap ganti video
     closeShopeeAd();
 
     document.getElementById("shortsTitle").innerText = drama.title;
@@ -800,8 +794,6 @@ function openShortsPlayer(dramaId) {
 
     const overlay = document.getElementById("shortsOverlay");
     overlay.style.display = "flex";
-    
-    // Hapus kelas hidden jika sebelumnya tersembunyi
     overlay.classList.remove("ui-hidden");
     
     document.body.style.overflow = "hidden"; 
@@ -821,7 +813,6 @@ function closeShortsPlayer() {
     closeShopeeAd();
 }
 
-// FUNGSI BARU: Sembunyikan/Tampilkan UI saat layar video diketuk
 function toggleShortsUI() {
     const overlay = document.getElementById("shortsOverlay");
     overlay.classList.toggle("ui-hidden");
@@ -873,14 +864,31 @@ async function fetchGoogleSheetsData(csvUrl) {
                 row.push(val.trim());
                 if (regex.lastIndex >= lines[i].length) break;
             }
-            const [id, title, genre, cover, synopsis, , video_url, shopee_url] = row;
+
+            // Tangkap kolom ke-9 (index 8) yaitu iklan_detik
+            const [id, title, genre, cover, synopsis, , video_url, shopee_url, iklan_detik_str] = row;
             if (!id || !title) continue;
+
+            // Proses string jadwal iklan (contoh: "10, 30, 60" menjadi array angka [10, 30, 60])
+            let jadwalIklan = [];
+            if (iklan_detik_str) {
+                jadwalIklan = iklan_detik_str.split(',')
+                    .map(num => parseInt(num.trim()))
+                    .filter(num => !isNaN(num) && num > 0);
+            } else {
+                // Fallback: Jika kolom di spreadsheet kosong, default ke detik 30
+                jadwalIklan = [30]; 
+            }
+
             parsedList.push({
-                id: id, title: title, genre: genre || "K-Drama",
+                id: id, 
+                title: title, 
+                genre: genre || "K-Drama",
                 cover: cover || "https://images.unsplash.com/photo-1518676599626-5cd8c2d678a2?q=80&w=400",
                 synopsis: synopsis || "Sinopsis drama shorts.",
                 videoId: parseYouTubeId(video_url || ""),
-                shopeeUrl: shopee_url || ""
+                shopeeUrl: shopee_url || "",
+                iklanDetik: jadwalIklan // Simpan array waktu iklan
             });
         }
         if (parsedList.length > 0) {
