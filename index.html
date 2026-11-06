@@ -9,7 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-primary: #07090e; /* Lebih gelap elegan */
+            --bg-primary: #07090e;
             --bg-secondary: #11141d;
             --bg-card: #181d29;
             --accent-color: #ff2a55;
@@ -104,7 +104,7 @@
         .card-poster {
             position: relative;
             width: 100%;
-            padding-top: 140%; /* Aspect Ratio 4:5.6 */
+            padding-top: 140%;
             background: #000;
         }
 
@@ -155,7 +155,7 @@
         }
 
         /* ========================================================= */
-        /* FULLSCREEN SHORTS PLAYER (MODAL)                          */
+        /* FULLSCREEN SHORTS PLAYER                                   */
         /* ========================================================= */
         #shortsOverlay {
             display: none;
@@ -178,7 +178,7 @@
             z-index: 1;
         }
 
-        /* TOMBOL KEMBALI MELAYANG KACA (GLASSMORPHISM) */
+        /* TOMBOL KEMBALI MELAYANG KACA */
         #floatingBackBtn {
             position: absolute;
             top: 24px;
@@ -198,7 +198,7 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             transition: all 0.3s ease;
-            opacity: 1; /* Muncul awalnya */
+            opacity: 1;
         }
 
         /* Area ketuk transparan */
@@ -208,7 +208,7 @@
             z-index: 1000000;
         }
 
-        /* BOTTOM INFO (GRADASI GELAP, JUDUL SAJA) */
+        /* BOTTOM INFO */
         #shortsBottomInfo {
             position: absolute;
             bottom: 0; left: 0; right: 0;
@@ -216,7 +216,7 @@
             background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, transparent 100%);
             z-index: 1000001;
             transition: all 0.3s ease;
-            pointer-events: none; /* Agar tidak menghalangi tap */
+            pointer-events: none;
         }
 
         .shorts-title {
@@ -237,7 +237,7 @@
             overflow: hidden;
         }
 
-        /* TOMBOL LIKE & SHARE MELAYANG KANAN */
+        /* TOMBOL LIKE & SHARE */
         .shorts-side-actions {
             position: absolute;
             bottom: 120px;
@@ -272,7 +272,7 @@
             margin-top: 2px;
         }
 
-        /* STATE SEMBUNYI (UI HILANG, FULL VIDEO) */
+        /* STATE SEMBUNYI */
         .ui-hidden #floatingBackBtn,
         .ui-hidden #shortsBottomInfo,
         .ui-hidden .shorts-side-actions {
@@ -363,27 +363,24 @@
     <div class="section-title">
         <i class="fa-solid fa-fire"></i> Trending Shorts Hari Ini
     </div>
-    <!-- GRID CARD PENUH & ELEGAN -->
     <div class="drama-grid" id="dramaGrid"></div>
 </div>
 
-<!-- ========================================== -->
-<!-- FULLSCREEN SHORTS OVERLAY                  -->
-<!-- ========================================== -->
+<!-- FULLSCREEN SHORTS OVERLAY -->
 <div id="shortsOverlay" class="ui-hidden">
     
     <!-- 1. VIDEO PLAYER FULL -->
     <div id="shortsYoutubePlayer"></div>
 
-    <!-- 2. AREA KETUK UNTUK SEMBUNYIKAN/MUNCULKAN UI -->
+    <!-- 2. AREA KETUK -->
     <div id="tapArea" onclick="toggleUI()"></div>
 
-    <!-- 3. TOMBOL KEMBALI ELEGAN (KACA) -->
+    <!-- 3. TOMBOL KEMBALI -->
     <div id="floatingBackBtn" onclick="closeShorts()">
         <i class="fa-solid fa-arrow-left"></i>
     </div>
 
-    <!-- 4. INFO BAWAH (JUDUL & SINOPSIS) -->
+    <!-- 4. INFO BAWAH -->
     <div id="shortsBottomInfo">
         <div class="shorts-title" id="shortsTitle">Judul Drama</div>
         <div class="shorts-desc" id="shortsDesc">Sinopsis...</div>
@@ -419,7 +416,6 @@
 <script>
 const DEFAULT_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVYkJJbDC1TpB4TzvYFzkfp4uBzYpXaqwYIARbBvqBkbtRSqz_2Olo07_tgvkwQj-Uft3CGkUvsB47/pub?output=csv"; 
 
-// Data Fallback jika Spreadsheet gagal dimuat
 let daftarDrama = [
     {
         id: "queen", title: "Queen of Tears", genre: "Romance, Drama",
@@ -447,18 +443,13 @@ let isReady = false;
 let adInterval = null;
 let adMuncul = [];
 
-// ==========================================
-// RENDER CARD KE LAYAR
-// ==========================================
 function renderGrid() {
     const grid = document.getElementById("dramaGrid");
     grid.innerHTML = "";
-    
     daftarDrama.forEach(d => {
         const card = document.createElement("div");
         card.className = "drama-card";
         card.onclick = () => openShorts(d.id);
-        
         card.innerHTML = `
             <div class="card-poster">
                 <img src="${d.cover}" alt="${d.title}" loading="lazy">
@@ -473,15 +464,20 @@ function renderGrid() {
     });
 }
 
-// ==========================================
-// PLAYER YOUTUBE
-// ==========================================
 function onYouTubeIframeAPIReady() {
     player = new YT.Player('shortsYoutubePlayer', {
         height: '100%', width: '100%',
         playerVars: { 
-            'autoplay': 1, 'rel': 0, 'playsinline': 1,
-            'modestbranding': 1, 'controls': 1, 'origin': window.location.origin 
+            'autoplay': 1, 
+            'rel': 0, 
+            'playsinline': 1,
+            'modestbranding': 1, 
+            'controls': 1, 
+            'origin': window.location.origin,
+            // --- KUNCI UNTUK MEMATIKAN SUBTITLE/TRANSLATE ---
+            'cc_load_policy': 0, 
+            'cc_lang_pref': 'off',
+            'iv_load_policy': 3 
         },
         events: {
             'onReady': () => { isReady = true; },
@@ -490,17 +486,25 @@ function onYouTubeIframeAPIReady() {
     });
 }
 
+// Fungsi untuk memastikan subtitle tetap mati
+function matikanSubtitle() {
+    if (player && isReady && typeof player.unloadModule === 'function') {
+        try {
+            player.unloadModule("captions");
+            player.unloadModule("cc");
+        } catch(e) {}
+    }
+}
+
 function onState(e) {
     if (e.data === YT.PlayerState.PLAYING) {
         startAdMonitor();
+        matikanSubtitle(); // Matikan paksa setiap kali video diputar
     } else {
         clearInterval(adInterval);
     }
 }
 
-// ==========================================
-// LOGIKA BUKA / TUTUP & UI
-// ==========================================
 function openShorts(id) {
     const item = daftarDrama.find(d => d.id === id);
     if (!item) return;
@@ -509,19 +513,19 @@ function openShorts(id) {
     adMuncul = [];
     closeAd();
 
-    // Isi data teks
     document.getElementById("shortsTitle").innerText = item.title;
     document.getElementById("shortsDesc").innerText = item.synopsis;
 
     const overlay = document.getElementById("shortsOverlay");
     overlay.style.display = "block";
-    
-    // KUNCI: Sembunyikan UI agar video 100% bersih saat awal dibuka
     overlay.classList.add("ui-hidden");
     
     document.body.style.overflow = "hidden"; 
 
-    if (player && isReady) player.loadVideoById(item.videoId);
+    if (player && isReady) {
+        player.loadVideoById(item.videoId);
+        setTimeout(matikanSubtitle, 500); // Paksa mati setelah load
+    }
 }
 
 function closeShorts() {
@@ -531,24 +535,19 @@ function closeShorts() {
     clearInterval(adInterval);
     closeAd();
 
-    // KUNCI: Matikan suara total saat keluar
     if (player && isReady) {
         try {
             player.pauseVideo();
             player.stopVideo();
-            player.loadVideoById(''); // Trik mematikan audio background
+            player.loadVideoById(''); 
         } catch(e) {}
     }
 }
 
-// Fungsi munculkan/sembunyikan UI (Kembali, Judul, Like)
 function toggleUI() {
     document.getElementById("shortsOverlay").classList.toggle("ui-hidden");
 }
 
-// ==========================================
-// IKLAN SHOPEE
-// ==========================================
 function startAdMonitor() {
     clearInterval(adInterval);
     adInterval = setInterval(() => {
@@ -575,9 +574,6 @@ function closeAd() {
     if (player && player.playVideo) player.playVideo();
 }
 
-// ==========================================
-// FITUR LAINNYA
-// ==========================================
 function toggleLike(btn) {
     const icon = btn.querySelector("i");
     if (icon.style.color === "rgb(255, 42, 85)") {
@@ -612,9 +608,6 @@ function parseYT(url) {
     return m ? m[1] : url;
 }
 
-// ==========================================
-// FETCH SPREADSHEET (Otomatis)
-// ==========================================
 async function loadSheets() {
     try {
         const res = await fetch(DEFAULT_SHEETS_CSV_URL);
@@ -655,7 +648,6 @@ async function loadSheets() {
     } catch (e) { console.log("Error fetch:", e); }
 }
 
-// Mulai
 window.onload = () => {
     renderGrid();
     loadSheets();
