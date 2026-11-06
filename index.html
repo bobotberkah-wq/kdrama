@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>KDramaFlix - Stream Drama Korea VIP</title>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0d14;
+            --bg-secondary: #131722;
+            --bg-card: #1c2230;
+            --bg-hover: #252d3f;
+            --accent-color: #ff2a55;
+            --accent-gradient: linear-gradient(135deg, #ff2a55 0%, #ff6b4a 100%);
+            --accent-glow: rgba(255, 42, 85, 0.35);
+            --text-main: #f3f4f6;
+            --text-muted: #9ca3af;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --radius-lg: 16px;
+            --radius-md: 10px;
+            --shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+            overflow-x: hidden;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background: #262e3f; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b4760; }
+
+        #appDrakor {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+            padding: 16px 20px 40px;
+            flex: 1;
+        }
+
+        /* HEADER NAVBAR */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0 18px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .brand-logo-nav {
+            font-size: 22px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .vip-tag {
+            background: rgba(255, 42, 85, 0.15);
+            color: #ff4d73;
+            border: 1px solid rgba(255, 42, 85, 0.3);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        /* TABS NAV */
+        .tab-navigation {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .tab-navigation::-webkit-scrollbar { display: none; }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 13.5px;
+            font-weight: 600;
+            padding: 9px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover { color: var(--text-main); background: rgba(255, 255, 255, 0.05); }
+        .tab-btn.active {
+            background: var(--accent-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 42, 85, 0.35);
+        }
+
+        /* VIDEO PLAYER SECTION */
+        #displayMateriCard {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            overflow: hidden;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow);
+            scroll-margin-top: 15px;
+        }
+
+        .player-header {
+            padding: 14px 18px;
+            background: var(--bg-card);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .player-title-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+            flex: 1;
+        }
+        .player-title-info i { color: var(--accent-color); font-size: 16px; flex-shrink: 0; }
+        .player-title {
+            font-size: 14.5px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .player-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .btn-nav-ep {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 6px 12px;
+            border-radius: 18px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-nav-ep:hover:not(:disabled) { background: rgba(255, 255, 255, 0.2); }
+        .btn-nav-ep:disabled { opacity: 0.35; cursor: not-allowed; }
+
+        .autoplay-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11.5px;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.04);
+            padding: 5px 10px;
+            border-radius: 18px;
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            user-select: none;
+        }
+        .autoplay-toggle input { accent-color: var(--accent-color); cursor: pointer; }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            background: #000;
+        }
+
+        .video-container iframe, .video-container #youtubePlayer {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            border: 0;
+        }
+
+        /* OVERLAY IKLAN SHOPEE */
+        .shopee-ad-overlay {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(4px);
+            z-index: 99;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            animation: fadeInAd 0.3s ease;
+        }
+
+        @keyframes fadeInAd {
+            from { opacity: 0; transform: scale(0.96); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .shopee-ad-box {
+            background: #1e2430;
+            border: 2px solid #ee4d2d;
+            border-radius: var(--radius-lg);
+            max-width: 380px;
+            width: 100%;
+            padding: 18px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 15px 35px rgba(238, 77, 45, 0.35);
+        }
+
+        .ad-badge-tag {
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #ee4d2d;
+            color: white;
+            font-size: 10.5px;
+            font-weight: 800;
+            padding: 2px 12px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .close-ad-btn {
+            position: absolute;
+            top: 8px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--text-muted);
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+        }
+        .close-ad-btn:hover { background: #ee4d2d; color: white; }
+
+        .shopee-product-img {
+            width: 100%;
+            height: 140px;
+            object-fit: cover;
+            border-radius: var(--radius-md);
+            margin: 10px 0;
+            border: 1px solid var(--border-color);
+        }
+
+        .shopee-ad-title { font-size: 14px; font-weight: 700; margin-bottom: 4px; color: white; }
+        .shopee-ad-desc { font-size: 12px; color: var(--text-muted); margin-bottom: 14px; }
+
+        .btn-shopee-buy {
+            display: inline-block;
+            width: 100%;
+            background: linear-gradient(135deg, #ee4d2d 0%, #ff7337 100%);
+            color: white;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 13px;
+            padding: 10px;
+            border-radius: 30px;
+            box-shadow: 0 4px 15px rgba(238, 77, 45, 0.4);
+            transition: all 0.2s;
+        }
+
+        /* KATALOG ROW SECTION */
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title i { color: var(--accent-color); }
+
+        .section-subtitle-tag {
+            font-size: 11.5px;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* HORIZONTAL SCROLL CAROUSEL FOR MOBILE */
+        .catalog-scroll-container {
+            position: relative;
+            margin: 0 -20px 24px -20px;
+            padding: 0 20px;
+        }
+
+        .drama-horizontal-list {
+            display: flex;
+            gap: 14px;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            padding: 6px 2px 16px;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: thin;
+        }
+
+        .drama-horizontal-list::-webkit-scrollbar {
+            height: 5px;
+        }
+        .drama-horizontal-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+        }
+
+        /* DRAMA CARD */
+        .drama-card {
+            flex: 0 0 150px;
+            scroll-snap-align: start;
+            background: var(--bg-secondary);
+            border-radius: var(--radius-md);
+            border: 2px solid var(--border-color);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        .drama-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 42, 85, 0.4);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .drama-card.selected {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 1px var(--accent-color), 0 8px 24px var(--accent-glow);
+            transform: scale(1.02);
+        }
+
+        .drama-card.selected::before {
+            content: "DIPILIH";
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--accent-color);
+            color: #fff;
+            font-size: 9.5px;
+            font-weight: 800;
+            padding: 2px 6px;
+            border-radius: 4px;
+            z-index: 3;
+            letter-spacing: 0.5px;
+        }
+
+        .card-poster-wrap {
+            position: relative;
+            width: 100%;
+            height: 205px;
+            background: #111;
+            overflow: hidden;
+        }
+
+        .card-poster-wrap img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .drama-card:hover .card-poster-wrap img {
+            transform: scale(1.05);
+        }
+
+        .card-episodes-count {
+            position: absolute;
+            bottom: 6px;
+            left: 6px;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(4px);
+            color: #f3f4f6;
+            font-size: 10.5px;
+            font-weight: 700;
+            padding: 2px 7px;
+            border-radius: 4px;
+        }
+
+        .card-details {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            flex: 1;
+            background: var(--bg-card);
+        }
+
+        .card-title {
+            font-size: 13.5px;
+            font-weight: 700;
+            color: var(--text-main);
+            line-height: 1.3;
+            margin-bottom: 4px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-genre {
+            font-size: 11px;
+            color: var(--text-muted);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* ACTIVE DRAMA & EPISODE SECTION */
+        #activeDramaSection {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow);
+            animation: slideDown 0.3s ease-out;
+            scroll-margin-top: 15px;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .active-drama-header {
+            display: flex;
+            gap: 16px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 16px;
+            align-items: flex-start;
+        }
+
+        .active-drama-cover {
+            width: 85px;
+            height: 120px;
+            border-radius: 8px;
+            object-fit: cover;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+        }
+
+        .active-drama-meta {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .active-badge-tag {
+            display: inline-block;
+            background: rgba(255, 42, 85, 0.15);
+            color: #ff4d73;
+            border: 1px solid rgba(255, 42, 85, 0.3);
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .active-drama-title {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 6px;
+            line-height: 1.25;
+        }
+
+        .active-drama-desc {
+            font-size: 12.5px;
+            color: var(--text-muted);
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* EPISODE TOOLBAR & LIST */
+        .episodes-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .episodes-label {
+            font-size: 14.5px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .toolbar-filters {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .ep-search-input {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-main);
+            padding: 6px 14px;
+            font-size: 12.5px;
+            width: 140px;
+            transition: all 0.2s;
+        }
+        .ep-search-input:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            width: 160px;
+        }
+
+        .ep-range-select {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            color: var(--text-main);
+            padding: 6px 12px;
+            font-size: 12px;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* GRID EPISODE BUTTONS */
+        .episode-grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 8px;
+            max-height: 290px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .ep-item-btn {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 10px 12px;
+            border-radius: var(--radius-md);
+            color: var(--text-main);
+            font-size: 12.5px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+        }
+
+        .ep-item-btn:hover {
+            background: var(--bg-hover);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .ep-item-btn.active-now {
+            background: rgba(255, 42, 85, 0.16);
+            border-color: var(--accent-color);
+            color: white;
+            box-shadow: 0 0 10px rgba(255, 42, 85, 0.25);
+        }
+
+        .ep-item-btn.active-now .ep-status-dot {
+            background: var(--accent-color);
+            box-shadow: 0 0 6px var(--accent-color);
+        }
+
+        .ep-status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            flex-shrink: 0;
+        }
+
+        /* PROMPT SEBELUM PILIH CARD */
+        .select-drama-prompt {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px dashed var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 30px 20px;
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+        .select-drama-prompt i {
+            font-size: 32px;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+            opacity: 0.8;
+        }
+        .select-drama-prompt p {
+            font-size: 13.5px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        /* REVIEWS TAB */
+        .reviews-container {
+            background: var(--bg-secondary);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            padding: 20px;
+        }
+
+        .rating-overview {
+            display: flex; align-items: center; gap: 16px;
+            background: var(--bg-card); padding: 14px 18px;
+            border-radius: var(--radius-md); margin-bottom: 18px;
+            border: 1px solid var(--border-color);
+        }
+
+        .rating-score { font-size: 34px; font-weight: 800; color: var(--text-main); }
+        .rating-stars { color: #ffb400; font-size: 15px; margin-bottom: 2px; }
+
+        .review-form {
+            background: var(--bg-card); border: 1px dashed var(--border-color);
+            padding: 16px; border-radius: var(--radius-md); margin-bottom: 20px;
+        }
+        .review-form h4 { font-size: 13.5px; margin-bottom: 10px; }
+        .review-inputs { display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap; }
+        .review-inputs input, .review-inputs select {
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            color: var(--text-main); padding: 8px 12px; border-radius: 8px;
+            font-size: 12.5px; flex: 1; min-width: 130px;
+        }
+        .review-form textarea {
+            width: 100%; background: var(--bg-secondary); border: 1px solid var(--border-color);
+            color: var(--text-main); padding: 10px; border-radius: 8px;
+            font-size: 12.5px; min-height: 70px; resize: vertical; margin-bottom: 10px;
+        }
+
+        .btn-submit-review {
+            background: var(--accent-gradient);
+            border: none;
+            color: white;
+            font-weight: 700;
+            font-size: 13px;
+            padding: 8px 18px;
+            border-radius: 20px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .review-item { padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+        .review-item:last-child { border-bottom: none; }
+        .review-meta { display: flex; justify-content: space-between; margin-bottom: 4px; }
+        .review-author { font-weight: 700; font-size: 13.5px; }
+        .review-comment { color: var(--text-muted); font-size: 13px; }
+        .review-date { font-size: 11px; color: #6b7280; margin-top: 3px; }
+
+        /* ABOUT TAB */
+        .about-container {
+            background: var(--bg-secondary); border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color); padding: 22px;
+        }
+        .about-header {
+            display: flex; align-items: center; gap: 14px;
+            margin-bottom: 18px; border-bottom: 1px solid var(--border-color);
+            padding-bottom: 14px;
+        }
+        .about-header i { font-size: 28px; color: var(--accent-color); }
+        .about-header h3 { font-size: 18px; font-weight: 800; }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 14px;
+        }
+
+        .about-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 16px;
+        }
+        .about-card i { font-size: 20px; color: var(--accent-color); margin-bottom: 8px; }
+        .about-card h4 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+        .about-card p { font-size: 12.5px; color: var(--text-muted); line-height: 1.5; }
+
+        /* TOAST UTILITY */
+        #toastNotice {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #252d3f;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 12.5px;
+            font-weight: 600;
+            border: 1px solid var(--accent-color);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 9999;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        #toastNotice.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 640px) {
+            #appDrakor { padding: 12px 14px 40px; }
+            .catalog-scroll-container { margin: 0 -14px 20px -14px; padding: 0 14px; }
+            .drama-card { flex: 0 0 135px; }
+            .card-poster-wrap { height: 180px; }
+            .episode-grid-view { grid-template-columns: repeat(2, 1fr); }
+            .player-header { padding: 10px 12px; }
+            .player-title { font-size: 13px; }
+            .btn-nav-ep { padding: 5px 10px; font-size: 11px; }
+            .toolbar-filters { width: 100%; justify-content: space-between; }
+            .ep-search-input { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+<div id="appDrakor">
+    <!-- NAVBAR -->
+    <header class="navbar">
+        <div class="brand-logo-nav">
+            <i class="fa-solid fa-clapperboard"></i> KDRAMAFLIX
+        </div>
+        <span class="vip-tag"><i class="fa-solid fa-crown"></i> VIP Streaming</span>
+    </header>
+
+    <!-- STATUS DATA SOURCE -->
+    <div id="dataSourceBanner" style="background: rgba(255, 255, 255, 0.04); border: 1px dashed var(--border-color); border-radius: var(--radius-md); padding: 12px 16px; margin-bottom: 18px; display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap;">
+        <div style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+            <i class="fa-solid fa-table-cells" style="color: #2ecc71; font-size: 16px;"></i>
+            <span><strong>Data Source:</strong> <span id="dataSourceStatus">Data Tersinkronisasi</span></span>
+        </div>
+        <button onclick="toggleSheetModal()" style="background: rgba(255, 42, 85, 0.15); border: 1px solid rgba(255, 42, 85, 0.3); color: #ff4d73; padding: 4px 12px; border-radius: 14px; font-size: 11px; font-weight: 700; cursor: pointer;">
+            <i class="fa-solid fa-gear"></i> Set Link Sheets
+        </button>
+    </div>
+
+    <!-- MODAL POPUP GOOGLE SHEETS -->
+    <div id="sheetModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:99999; backdrop-filter:blur(4px); align-items:center; justify-content:center; padding:16px;">
+        <div style="background:var(--bg-secondary); border:1px solid var(--border-color); border-radius:var(--radius-lg); max-width:480px; width:100%; padding:20px; box-shadow:var(--shadow);">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+                <h3 style="font-size:16px; font-weight:800;"><i class="fa-solid fa-table-list" style="color:var(--accent-color);"></i> Link CSV Google Sheets</h3>
+                <button onclick="toggleSheetModal()" style="background:none; border:none; color:var(--text-muted); font-size:16px; cursor:pointer;"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:14px; line-height:1.5;">
+                Tempelkan tautan CSV publik yang didapat dari menu <em>File &rarr; Bagikan &rarr; Publikasikan ke web (.csv)</em>:
+            </p>
+            <input type="text" id="sheetUrlInput" placeholder="https://docs.google.com/spreadsheets/d/.../pub?output=csv" style="width:100%; background:var(--bg-card); border:1px solid var(--border-color); border-radius:8px; color:var(--text-main); padding:9px 12px; font-size:12px; margin-bottom:12px;" />
+            <div style="display:flex; gap:8px;">
+                <button onclick="loadFromCustomSheet()" class="btn-submit-review" style="flex:1; justify-content:center; padding:10px;">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> Sinkronkan Data
+                </button>
+                <button onclick="resetToLocalData()" style="background:rgba(255,255,255,0.06); border:1px solid var(--border-color); color:var(--text-muted); padding:10px 14px; border-radius:20px; font-size:12px; font-weight:700; cursor:pointer;">
+                    Reset
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tab-navigation">
+        <button id="btn-drakor-tab" class="tab-btn active" onclick="switchTab('drakor-tab')">
+            <i class="fa-solid fa-film"></i> Katalog & Streaming
+        </button>
+        <button id="btn-reviews-tab" class="tab-btn" onclick="switchTab('reviews-tab')">
+            <i class="fa-solid fa-star"></i> Ulasan
+        </button>
+        <button id="btn-about-tab" class="tab-btn" onclick="switchTab('about-tab')">
+            <i class="fa-solid fa-circle-info"></i> Info
+        </button>
+    </div>
+
+    <!-- MAIN TAB -->
+    <div id="drakor-tab" class="tab-content">
+        <!-- 1. VIDEO PLAYER SECTION -->
+        <div id="displayMateriCard" style="display:none;">
+            <div class="player-header">
+                <div class="player-title-info">
+                    <i class="fa-solid fa-circle-play"></i>
+                    <span class="player-title" id="playingTitle">Pilih Episode</span>
+                </div>
+                
+                <div class="player-controls">
+                    <button id="btnPrevEp" class="btn-nav-ep" onclick="playPreviousEpisode()"><i class="fa-solid fa-backward"></i> Prev</button>
+                    <button id="btnNextEp" class="btn-nav-ep" onclick="playNextEpisode()">Next <i class="fa-solid fa-forward"></i></button>
+                    
+                    <label class="autoplay-toggle" title="Otomatis memutar episode selanjutnya">
+                        <input type="checkbox" id="autoPlayNextCheck" checked /> Auto Next
+                    </label>
+                </div>
+            </div>
+
+            <div class="video-container" id="videoContainer">
+                <div id="youtubePlayer"></div>
+                
+                <!-- IKLAN SHOPEE OVERLAY -->
+                <div id="shopeeAdOverlay" class="shopee-ad-overlay" style="display: none;">
+                    <div class="shopee-ad-box">
+                        <span class="ad-badge-tag"><i class="fa-solid fa-bag-shopping"></i> Rekomendasi</span>
+                        <button class="close-ad-btn" onclick="closeShopeeAd()"><i class="fa-solid fa-xmark"></i></button>
+                        
+                        <img id="adProductImg" class="shopee-product-img" src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop" alt="Produk Shopee">
+                        <div id="adProductTitle" class="shopee-ad-title">Spesial Promo Drama Korea!</div>
+                        <div id="adProductDesc" class="shopee-ad-desc">Dapatkan diskon eksklusif merchandise & snack impor Korea favoritmu di Shopee!</div>
+                        
+                        <a id="adShopeeLink" href="#" target="_blank" class="btn-shopee-buy" onclick="closeShopeeAd()">
+                            <i class="fa-solid fa-cart-shopping"></i> CEK PROMO SHOPEE
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. SCROLLABLE HORIZONTAL CAROUSEL (MOBILE FRIENDLY) -->
+        <div class="section-header">
+            <div class="section-title">
+                <i class="fa-solid fa-fire"></i> Pilihan Serial Drama
+            </div>
+            <div class="section-subtitle-tag">
+                <i class="fa-solid fa-hand-pointer"></i> Geser & Pilih Card
+            </div>
+        </div>
+
+        <div class="catalog-scroll-container">
+            <div class="drama-horizontal-list" id="dramaHorizontalList"></div>
+        </div>
+
+        <!-- 3. EPISODES LIST ON-DEMAND -->
+        <div id="activeDramaWrapper">
+            <div id="activeDramaSection" style="display: none;">
+                <div class="active-drama-header">
+                    <img id="activeDramaCover" class="active-drama-cover" src="" alt="Poster" />
+                    <div class="active-drama-meta">
+                        <span id="activeDramaGenre" class="active-badge-tag">Romance</span>
+                        <h2 id="activeDramaTitle" class="active-drama-title">Judul Drama</h2>
+                        <p id="activeDramaDesc" class="active-drama-desc">Sinopsis drama.</p>
+                    </div>
+                </div>
+
+                <div class="episodes-toolbar">
+                    <div class="episodes-label">
+                        <i class="fa-solid fa-list-ul" style="color:var(--accent-color)"></i> Daftar Episode
+                    </div>
+                    <div class="toolbar-filters">
+                        <input type="text" class="ep-search-input" id="epSearchInput" placeholder="Cari episode..." oninput="onSearchEpisodeChange()">
+                        <div id="paginationSelectContainer"></div>
+                    </div>
+                </div>
+
+                <div class="episode-grid-view" id="activeEpisodesList"></div>
+            </div>
+
+            <div id="selectDramaPrompt" class="select-drama-prompt">
+                <i class="fa-regular fa-hand-pointer fa-bounce"></i>
+                <p>Silakan ketuk salah satu <strong>Card Drama</strong> di atas untuk memunculkan daftar episode di bawah ini.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB REVIEWS -->
+    <div id="reviews-tab" class="tab-content" style="display: none;">
+        <div class="reviews-container">
+            <div class="section-title" style="margin-bottom:14px;">
+                <i class="fa-solid fa-star"></i> Ulasan Penonton
+            </div>
+            <div class="rating-overview">
+                <div class="rating-score">4.9</div>
+                <div>
+                    <div class="rating-stars">★★★★★</div>
+                    <div style="color:var(--text-muted); font-size:12px;">Total respon 18 penonton maraton</div>
+                </div>
+            </div>
+            <div class="review-form">
+                <h4>✍️ Tulis Komentar:</h4>
+                <div class="review-inputs">
+                    <input type="text" id="revName" placeholder="Nama Anda..." />
+                    <select id="revStars">
+                        <option value="5">★★★★★ (5/5) Sangat Puas</option>
+                        <option value="4">★★★★☆ (4/5) Bagus</option>
+                        <option value="3">★★★☆☆ (3/5) Cukup</option>
+                    </select>
+                </div>
+                <textarea id="revText" placeholder="Bagikan tanggapanmu tentang jalan cerita episode favorit..."></textarea>
+                <button class="btn-submit-review" onclick="addNewReview()">
+                    <i class="fa-solid fa-paper-plane"></i> Kirim Ulasan
+                </button>
+            </div>
+            <div id="reviewsContainerList">
+                <div class="review-item">
+                    <div class="review-meta">
+                        <span class="review-author">Dewi Lestari</span>
+                        <span class="rating-stars" style="font-size:12px;">★★★★★</span>
+                    </div>
+                    <p class="review-comment">Tampilan scroll kanan kirinya halus banget di layar HP! Begitu diklik episode langsung rapi di bawah.</p>
+                    <div class="review-date">Baru saja</div>
+                </div>
+                <div class="review-item">
+                    <div class="review-meta">
+                        <span class="review-author">Rian Putra</span>
+                        <span class="rating-stars" style="font-size:12px;">★★★★★</span>
+                    </div>
+                    <p class="review-comment">Auto Next Ep-nya lancar, maraton Queen of Tears jadi gak kerasa waktu.</p>
+                    <div class="review-date">1 jam yang lalu</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB ABOUT -->
+    <div id="about-tab" class="tab-content" style="display: none;">
+        <div class="about-container">
+            <div class="about-header">
+                <i class="fa-solid fa-tv"></i>
+                <div>
+                    <h3>KDramaFlix Mobile Hub</h3>
+                    <p style="color:var(--text-muted); font-size:13px;">Platform streaming drama Korea yang fleksibel dan responsif untuk pengguna smartphone.</p>
+                </div>
+            </div>
+
+            <div class="about-grid">
+                <div class="about-card">
+                    <i class="fa-solid fa-arrows-left-right"></i>
+                    <h4>Swipe Carousel Mobile</h4>
+                    <p>Navigasi katalog drama berupa deretan card horizontal yang mudah digeser dengan satu jari di layar smartphone Anda.</p>
+                </div>
+
+                <div class="about-card">
+                    <i class="fa-solid fa-layer-group"></i>
+                    <h4>Episode On-Demand</h4>
+                    <p>Daftar episode hanya dimuat dan ditampilkan ketika judul yang bersangkutan dipilih, membuat tampilan tetap bersih dan efisien.</p>
+                </div>
+
+                <div class="about-card">
+                    <i class="fa-solid fa-bolt"></i>
+                    <h4>Auto Next Episode</h4>
+                    <p>Pindah ke episode berikutnya otomatis saat tayangan berakhir sehingga pengalaman maraton tetap berkesinambungan.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="toastNotice"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Notifikasi</span></div>
+
+<!-- YOUTUBE IFRAME API -->
+<script src="https://www.youtube.com/iframe_api"></script>
+
+<script>
+// =========================================================================
+// 💡 TEMPEL LINK CSV GOOGLE SHEETS ANDA DISINI (OPSIONAL)
+// =========================================================================
+const DEFAULT_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVYkJJbDC1TpB4TzvYFzkfp4uBzYpXaqwYIARbBvqBkbtRSqz_2Olo07_tgvkwQj-Uft3CGkUvsB47/pub?output=csv"; 
+
+// PARSER YOUTUBE ID OTOMATIS
+function parseYouTubeId(input) {
+    if (!input) return "";
+    input = input.trim();
+    if (/^[a-zA-Z0-9_-]{11}$/.test(input)) return input;
+    const match = input.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=|shorts\/))([\w-]{11})/);
+    return match ? match[1] : input;
+}
+
+const KONFIGURASI_IKLAN_SHOPEE = {
+    waktuMunculDetik: 30,
+    bannerDefaultImage: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop",
+    judulDefault: "🛍️ Promo Spesial Rekomendasi Shopee!",
+    deskripsiDefault: "Temukan produk pilihan unik, snack Korea, & fashion menarik hanya di Shopee!"
+};
+
+// DATA CADANGAN / DEFAULT JIKA BELUM TERHUBUNG GOOGLE SHEETS
+function generateDummyEpisodes(count) {
+    const list = [];
+    const videos = ["7XO6zMvG00g", "AgV2LU01U8U", "8h771iioA68", "S6KsSUcu3Y8"];
+    for(let i = 1; i <= count; i++) {
+        list.push({
+            epIndex: i,
+            judul: `Ep ${i}`,
+            videoId: videos[(i - 1) % videos.length],
+            shopeeUrl: (i % 2 === 0) ? "https://shope.ee/contoh" : ""
+        });
+    }
+    return list;
+}
+
+let daftarDrama = [
+    {
+        id: "queen_of_tears",
+        title: "Queen of Tears",
+        genre: "Romance, Drama",
+        synopsis: "Kisah cinta dan dinamika pernikahan pewaris chaebol dan pengacara desa yang menghadapi krisis pelik bersama.",
+        cover: "https://images.unsplash.com/photo-1518676599626-5cd8c2d678a2?q=80&w=400&auto=format&fit=crop",
+        episodes: generateDummyEpisodes(16)
+    },
+    {
+        id: "lovely_runner",
+        title: "Lovely Runner",
+        genre: "Time-Travel, Romance",
+        synopsis: "Seorang penggemar berat kembali ke masa lalu demi menyelamatkan idola favoritnya dari tragedi masa depan.",
+        cover: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400&auto=format&fit=crop",
+        episodes: generateDummyEpisodes(16)
+    },
+    {
+        id: "vincenzo",
+        title: "Vincenzo",
+        genre: "Crime, Dark Comedy",
+        synopsis: "Seorang pengacara mafia Italia berdarah Korea kembali ke Seoul untuk merebut emas tersembunyi.",
+        cover: "https://images.unsplash.com/photo-1509198397868-475647b2a1e5?q=80&w=400&auto=format&fit=crop",
+        episodes: generateDummyEpisodes(20)
+    },
+    {
+        id: "crash_landing",
+        title: "Crash Landing on You",
+        genre: "Romance, Comedy",
+        synopsis: "Pewaris konglomerat mendarat darurat di Korea Utara akibat badai paralayang yang tak terduga.",
+        cover: "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=400&auto=format&fit=crop",
+        episodes: generateDummyEpisodes(16)
+    }
+];
+
+// STATE MANAGEMENT
+let selectedDramaId = null;
+let currentPlayingItem = null;
+let player = null;
+let isPlayerReady = false;
+let adCheckInterval = null;
+let hasAdTriggeredForCurrentEp = false;
+
+function showToast(msg) {
+    const toast = document.getElementById("toastNotice");
+    const label = document.getElementById("toastMsg");
+    label.innerText = msg;
+    toast.classList.add("show");
+    setTimeout(() => {
+        toast.classList.remove("show");
+    }, 2800);
+}
+
+function toggleSheetModal() {
+    const modal = document.getElementById("sheetModal");
+    modal.style.display = (modal.style.display === "flex") ? "none" : "flex";
+}
+
+// FETCH CSV DARI GOOGLE SHEETS
+async function fetchGoogleSheetsData(csvUrl) {
+    try {
+        showToast("Sinkronisasi Google Sheets...");
+        const response = await fetch(csvUrl);
+        if (!response.ok) throw new Error("Gagal mengambil respon dari URL CSV.");
+        const text = await response.text();
+        
+        const lines = text.split(/\r?\n/).filter(line => line.trim() !== "");
+        if (lines.length <= 1) throw new Error("Tabel Spreadsheet kosong.");
+
+        const dramaMap = {};
+
+        for (let i = 1; i < lines.length; i++) {
+            // Parser CSV dengan penanganan tanda kutip ganda
+            const regex = /(?:,|\n|^)("(?:(?:"")*[^"]*)*"|[^",\n]*|(?:\n|$))/g;
+            const row = [];
+            let match;
+            while ((match = regex.exec(lines[i])) !== null) {
+                let val = match[1];
+                if (val === undefined) break;
+                if (val.startsWith('"') && val.endsWith('"')) {
+                    val = val.substring(1, val.length - 1).replace(/""/g, '"');
+                }
+                row.push(val.trim());
+                if (regex.lastIndex >= lines[i].length) break;
+            }
+
+            const [id, title, genre, cover, synopsis, episode_num, video_url, shopee_url] = row;
+            if (!id || !title) continue;
+
+            if (!dramaMap[id]) {
+                dramaMap[id] = {
+                    id: id,
+                    title: title,
+                    genre: genre || "K-Drama",
+                    cover: cover || "https://images.unsplash.com/photo-1518676599626-5cd8c2d678a2?q=80&w=400",
+                    synopsis: synopsis || "Sinopsis serial drama.",
+                    episodes: []
+                };
+            }
+
+            const epNum = parseInt(episode_num) || (dramaMap[id].episodes.length + 1);
+            dramaMap[id].episodes.push({
+                epIndex: epNum,
+                judul: `Ep ${epNum}`,
+                videoId: parseYouTubeId(video_url || ""),
+                shopeeUrl: shopee_url || ""
+            });
+        }
+
+        const parsedList = Object.values(dramaMap);
+        if (parsedList.length === 0) throw new Error("Format kolom Spreadsheet tidak cocok.");
+
+        parsedList.forEach(d => d.episodes.sort((a,b) => a.epIndex - b.epIndex));
+        daftarDrama = parsedList;
+
+        renderHorizontalCatalog();
+        if (daftarDrama.length > 0) {
+            selectDrama(daftarDrama[0].id, false);
+        }
+
+        document.getElementById("dataSourceStatus").innerHTML = `<span style="color:#2ecc71;">Terkoneksi Sheets (${parsedList.length} Drama)</span>`;
+        showToast("Data berhasil disinkronkan!");
+        localStorage.setItem("KDRAMA_SHEET_CSV", csvUrl);
+    } catch (err) {
+        showToast("Error Sheets: " + err.message);
+    }
+}
+
+function loadFromCustomSheet() {
+    const input = document.getElementById("sheetUrlInput").value.trim();
+    if (!input) {
+        showToast("Masukkan link CSV publik terlebih dahulu!");
+        return;
+    }
+    toggleSheetModal();
+    fetchGoogleSheetsData(input);
+}
+
+function resetToLocalData() {
+    localStorage.removeItem("KDRAMA_SHEET_CSV");
+    location.reload();
+}
+
+// YOUTUBE API
+function onYouTubeIframeAPIReady() {
+    player = new YT.Player('youtubePlayer', {
+        height: '100%',
+        width: '100%',
+        playerVars: { 'autoplay': 1, 'rel': 0 },
+        events: {
+            'onReady': () => { isPlayerReady = true; },
+            'onStateChange': onPlayerStateChange
+        }
+    });
+}
+
+function onPlayerStateChange(event) {
+    if (event.data === YT.PlayerState.PLAYING) {
+        startAdMonitor();
+    } else if (event.data === YT.PlayerState.ENDED) {
+        clearInterval(adCheckInterval);
+        const autoCheck = document.getElementById("autoPlayNextCheck");
+        if (autoCheck && autoCheck.checked) playNextEpisode();
+    } else {
+        clearInterval(adCheckInterval);
+    }
+}
+
+function startAdMonitor() {
+    clearInterval(adCheckInterval);
+    adCheckInterval = setInterval(() => {
+        if (player && player.getCurrentTime && currentPlayingItem && currentPlayingItem.shopeeUrl) {
+            let currentTime = player.getCurrentTime();
+            if (currentTime >= KONFIGURASI_IKLAN_SHOPEE.waktuMunculDetik && !hasAdTriggeredForCurrentEp) {
+                showShopeeAd(currentPlayingItem.shopeeUrl);
+            }
+        }
+    }, 1000);
+}
+
+function showShopeeAd(shopeeUrl) {
+    hasAdTriggeredForCurrentEp = true;
+    if (player && player.pauseVideo) player.pauseVideo();
+    document.getElementById("adShopeeLink").href = shopeeUrl;
+    document.getElementById("shopeeAdOverlay").style.display = "flex";
+}
+
+function closeShopeeAd() {
+    document.getElementById("shopeeAdOverlay").style.display = "none";
+    if (player && player.playVideo) player.playVideo();
+}
+
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.getElementById(tabId).style.display = 'block';
+    document.getElementById('btn-' + tabId).classList.add('active');
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// 1. CAROUSEL RENDER
+function renderHorizontalCatalog() {
+    const container = document.getElementById("dramaHorizontalList");
+    container.innerHTML = "";
+
+    daftarDrama.forEach(drama => {
+        const isSelected = drama.id === selectedDramaId;
+        const card = document.createElement("div");
+        card.className = `drama-card ${isSelected ? 'selected' : ''}`;
+        card.id = `catalog_card_${drama.id}`;
+        card.onclick = () => selectDrama(drama.id, true);
+
+        card.innerHTML = `
+            <div class="card-poster-wrap">
+                <img src="${drama.cover}" alt="${escapeHtml(drama.title)}" loading="lazy">
+                <span class="card-episodes-count">${drama.episodes.length} Ep</span>
+            </div>
+            <div class="card-details">
+                <div class="card-title">${escapeHtml(drama.title)}</div>
+                <div class="card-genre">${escapeHtml(drama.genre)}</div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+// 2. PILIH CARD KATALOG
+function selectDrama(dramaId, shouldScroll = false) {
+    selectedDramaId = dramaId;
+    const drama = daftarDrama.find(d => d.id === dramaId);
+    if (!drama) return;
+
+    document.querySelectorAll('.drama-card').forEach(el => el.classList.remove('selected'));
+    const activeCard = document.getElementById(`catalog_card_${dramaId}`);
+    if (activeCard) {
+        activeCard.classList.add('selected');
+        activeCard.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+
+    document.getElementById("selectDramaPrompt").style.display = "none";
+    const section = document.getElementById("activeDramaSection");
+    section.style.display = "block";
+
+    document.getElementById("activeDramaCover").src = drama.cover;
+    document.getElementById("activeDramaTitle").innerText = drama.title;
+    document.getElementById("activeDramaGenre").innerText = drama.genre;
+    document.getElementById("activeDramaDesc").innerText = drama.synopsis;
+
+    const paginationContainer = document.getElementById("paginationSelectContainer");
+    const chunkSize = 20;
+    const totalPages = Math.ceil(drama.episodes.length / chunkSize);
+
+    if (totalPages > 1) {
+        let selectHtml = `<select class="ep-range-select" id="epRangeSelect" onchange="renderActiveEpisodes()">`;
+        for (let i = 0; i < totalPages; i++) {
+            let start = i * chunkSize + 1;
+            let end = Math.min((i + 1) * chunkSize, drama.episodes.length);
+            selectHtml += `<option value="${i}">Ep ${start}-${end}</option>`;
+        }
+        selectHtml += `</select>`;
+        paginationContainer.innerHTML = selectHtml;
+    } else {
+        paginationContainer.innerHTML = "";
+    }
+
+    const searchInput = document.getElementById("epSearchInput");
+    if (searchInput) searchInput.value = "";
+
+    renderActiveEpisodes();
+
+    if (shouldScroll) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// 3. DAFTAR EPISODE
+function renderActiveEpisodes() {
+    if (!selectedDramaId) return;
+    const drama = daftarDrama.find(d => d.id === selectedDramaId);
+    if (!drama) return;
+
+    const listContainer = document.getElementById("activeEpisodesList");
+    listContainer.innerHTML = "";
+
+    const searchInput = document.getElementById("epSearchInput");
+    const filterQuery = searchInput ? searchInput.value.trim().toLowerCase() : "";
+
+    const rangeSelect = document.getElementById("epRangeSelect");
+    const selectedPageIndex = rangeSelect ? parseInt(rangeSelect.value) : 0;
+    const chunkSize = 20;
+
+    let episodesToDisplay = drama.episodes;
+
+    if (filterQuery !== "") {
+        episodesToDisplay = drama.episodes.filter(ep => 
+            ep.judul.toLowerCase().includes(filterQuery) || ep.epIndex.toString() === filterQuery
+        );
+    } else if (rangeSelect) {
+        let start = selectedPageIndex * chunkSize;
+        let end = start + chunkSize;
+        episodesToDisplay = drama.episodes.slice(start, end);
+    }
+
+    if (episodesToDisplay.length === 0) {
+        listContainer.innerHTML = `<div style="grid-column: 1/-1; text-align:center; padding: 20px; color: var(--text-muted); font-size: 13px;">Episode tidak ditemukan.</div>`;
+        return;
+    }
+
+    episodesToDisplay.forEach(ep => {
+        const isPlaying = currentPlayingItem && 
+                          currentPlayingItem.dramaId === drama.id && 
+                          currentPlayingItem.epIndex === ep.epIndex;
+
+        const btn = document.createElement("button");
+        btn.className = `ep-item-btn ${isPlaying ? 'active-now' : ''}`;
+        btn.onclick = () => playEpisode(drama.id, ep.epIndex);
+
+        btn.innerHTML = `
+            <span><i class="fa-solid fa-play" style="font-size: 10px; margin-right: 6px; color: ${isPlaying ? 'var(--accent-color)' : 'var(--text-muted)'};"></i> ${escapeHtml(ep.judul)}</span>
+            <span class="ep-status-dot"></span>
+        `;
+        listContainer.appendChild(btn);
+    });
+}
+
+function onSearchEpisodeChange() {
+    renderActiveEpisodes();
+}
+
+// 4. PUTAR VIDEO
+function playEpisode(dramaId, epIndex) {
+    const drama = daftarDrama.find(d => d.id === dramaId);
+    if (!drama) return;
+
+    const ep = drama.episodes.find(e => e.epIndex === epIndex);
+    if (!ep) return;
+
+    hasAdTriggeredForCurrentEp = false;
+    closeShopeeAd();
+
+    currentPlayingItem = {
+        dramaId: drama.id,
+        epIndex: ep.epIndex,
+        videoId: ep.videoId,
+        dramaTitle: drama.title,
+        epTitle: ep.judul,
+        shopeeUrl: ep.shopeeUrl
+    };
+
+    const displayCard = document.getElementById("displayMateriCard");
+    document.getElementById("playingTitle").innerText = `${drama.title} - ${ep.judul}`;
+    displayCard.style.display = "block";
+
+    if (player && isPlayerReady && player.loadVideoById) {
+        player.loadVideoById(ep.videoId);
+    }
+
+    updateNavButtons();
+    renderActiveEpisodes();
+    showToast(`Memutar ${drama.title} ${ep.judul}`);
+
+    setTimeout(() => {
+        displayCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 120);
+}
+
+function updateNavButtons() {
+    if (!currentPlayingItem) return;
+    const drama = daftarDrama.find(d => d.id === currentPlayingItem.dramaId);
+    if (!drama) return;
+
+    document.getElementById("btnPrevEp").disabled = currentPlayingItem.epIndex <= 1;
+    document.getElementById("btnNextEp").disabled = currentPlayingItem.epIndex >= drama.episodes.length;
+}
+
+function playPreviousEpisode() {
+    if (!currentPlayingItem || currentPlayingItem.epIndex <= 1) return;
+    playEpisode(currentPlayingItem.dramaId, currentPlayingItem.epIndex - 1);
+}
+
+function playNextEpisode() {
+    if (!currentPlayingItem) return;
+    const drama = daftarDrama.find(d => d.id === currentPlayingItem.dramaId);
+    if (drama && currentPlayingItem.epIndex < drama.episodes.length) {
+        playEpisode(currentPlayingItem.dramaId, currentPlayingItem.epIndex + 1);
+    }
+}
+
+// 5. ULASAN
+function addNewReview() {
+    const name = document.getElementById("revName").value.trim();
+    const starsNum = parseInt(document.getElementById("revStars").value);
+    const text = document.getElementById("revText").value.trim();
+
+    if (!name || !text) {
+        showToast("Lengkapi nama dan ulasan Anda.");
+        return;
+    }
+
+    const starsHtml = "★".repeat(starsNum) + "☆".repeat(5 - starsNum);
+    const container = document.getElementById("reviewsContainerList");
+    const newDiv = document.createElement("div");
+    newDiv.className = "review-item";
+    
+    newDiv.innerHTML = `
+        <div class="review-meta">
+            <span class="review-author">${escapeHtml(name)}</span>
+            <span class="rating-stars" style="font-size:12px;">${starsHtml}</span>
+        </div>
+        <p class="review-comment">${escapeHtml(text)}</p>
+        <div class="review-date">Baru saja</div>
+    `;
+
+    container.insertBefore(newDiv, container.firstChild);
+    document.getElementById("revName").value = "";
+    document.getElementById("revText").value = "";
+    showToast("Ulasan berhasil terkirim!");
+}
+
+// INISIALISASI HALAMAN
+window.onload = function() {
+    const savedSheet = localStorage.getItem("KDRAMA_SHEET_CSV") || DEFAULT_SHEETS_CSV_URL;
+    if (savedSheet) {
+        document.getElementById("sheetUrlInput").value = savedSheet;
+        fetchGoogleSheetsData(savedSheet);
+    } else {
+        renderHorizontalCatalog();
+        if (daftarDrama.length > 0) {
+            selectDrama(daftarDrama[0].id, false);
+        }
+    }
+};
+</script>
+</body>
+</html>
