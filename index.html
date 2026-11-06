@@ -277,27 +277,38 @@
             height: 100dvh;
             background: #000;
             z-index: 999999;
-            flex-direction: column;
             overflow: hidden;
         }
 
-        /* AREA VIDEO (BERSIH TANPA UI) */
-        #shortsVideoContainer {
-            flex: 1;
-            position: relative;
-            width: 100%;
-            background: #000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
+        /* Area Video Benar-benar Full Screen */
         #shortsYoutubePlayer {
             width: 100%;
             height: 100%;
             position: absolute;
             top: 0; left: 0;
             border: none;
+            z-index: 1; /* Di bawah UI */
+        }
+
+        /* TOMBOL KEMBALI MELAYANG (FLOATING) */
+        #floatingBackBtn {
+            position: absolute;
+            top: 20px;
+            left: 16px;
+            z-index: 1000002;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            transition: opacity 0.3s ease;
         }
 
         /* OVERLAY IKLAN SHOPEE */
@@ -306,7 +317,7 @@
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(4px);
-            z-index: 99;
+            z-index: 1000005; /* Paling atas */
             display: flex;
             align-items: center;
             justify-content: center;
@@ -387,74 +398,15 @@
             transition: all 0.2s;
         }
 
-        /* AREA BAWAH UI (METADATA & TOMBOL) */
+        /* UI MELAYANG DI BAGIAN BAWAH (HANYA MUNCUL JIKA DIKETUK) */
         #shortsBottomUI {
-            background: linear-gradient(to top, #0a0d14 0%, #131722 100%);
-            padding: 16px 20px 30px 20px;
-            border-top: 1px solid rgba(255,255,255,0.05);
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 100000;
-        }
-
-        .shorts-header-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-
-        .btn-back-shorts {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: #fff;
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .shorts-action-row {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-action-circle {
-            background: rgba(255,255,255,0.1);
-            border: none;
-            color: #fff;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .btn-action-circle:hover { background: rgba(255,255,255,0.2); }
-
-        .shorts-title-text {
-            font-size: 18px;
-            font-weight: 800;
-            color: #fff;
-            margin-bottom: 6px;
-            line-height: 1.3;
-        }
-
-        .shorts-desc-text {
-            font-size: 13px;
-            color: var(--text-muted);
-            line-height: 1.5;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(to top, rgba(10, 13, 20, 0.95) 0%, rgba(19, 23, 34, 0) 100%);
+            padding: 40px 20px 30px 20px;
+            z-index: 1000001;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: auto;
         }
 
         /* Kelas untuk menyembunyikan UI */
@@ -462,8 +414,48 @@
             transform: translateY(100%);
             opacity: 0;
             pointer-events: none;
-            position: absolute;
-            bottom: 0; left: 0; right: 0;
+        }
+
+        .shorts-action-row {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-bottom: 12px;
+        }
+
+        .btn-action-circle {
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: #fff;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+        }
+
+        .shorts-title-text {
+            font-size: 18px;
+            font-weight: 800;
+            color: #fff;
+            margin-bottom: 6px;
+            line-height: 1.3;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }
+
+        .shorts-desc-text {
+            font-size: 13px;
+            color: #d1d5db;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
         }
 
         /* TOAST UTILITY */
@@ -543,79 +535,55 @@
         </div>
     </div>
 
-    <!-- TAB REVIEWS -->
-    <div id="reviews-tab" class="tab-content" style="display: none;">
-        <div style="background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 20px;">
-            <div class="section-title" style="margin-bottom:14px;">
-                <i class="fa-solid fa-star"></i> Ulasan Penonton
-            </div>
-            <div style="display: flex; align-items: center; gap: 16px; background: var(--bg-card); padding: 14px 18px; border-radius: var(--radius-md); margin-bottom: 18px;">
-                <div style="font-size: 34px; font-weight: 800;">4.9</div>
-                <div>
-                    <div style="color: #ffb400; font-size: 15px;">★★★★★</div>
-                    <div style="color:var(--text-muted); font-size:12px;">Total respon 18 penonton</div>
-                </div>
-            </div>
-            <div id="reviewsContainerList">
-                <div style="padding: 12px 0; border-bottom: 1px solid var(--border-color);">
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
-                        <span style="font-weight: 700; font-size: 13.5px;">Dewi Lestari</span>
-                        <span style="color: #ffb400; font-size:12px;">★★★★★</span>
-                    </div>
-                    <p style="color: var(--text-muted); font-size: 13px;">Tampilan scroll kanan kirinya halus banget di layar HP!</p>
-                </div>
-            </div>
-        </div>
+    <!-- TAB REVIEWS & ABOUT (Disingkat agar kode ringan) -->
+    <div id="reviews-tab" class="tab-content" style="display: none; padding: 20px;">
+        <h3>Ulasan Penonton</h3>
     </div>
-
-    <!-- TAB ABOUT -->
-    <div id="about-tab" class="tab-content" style="display: none;">
-        <div style="background: var(--bg-secondary); border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 22px;">
-            <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 10px;">KDramaFlix Mobile Hub</h3>
-            <p style="color: var(--text-muted); font-size: 13px; line-height: 1.6;">Platform streaming drama Korea yang fleksibel dan responsif untuk pengguna smartphone. Nikmati pengalaman menonton tanpa gangguan.</p>
-        </div>
+    <div id="about-tab" class="tab-content" style="display: none; padding: 20px;">
+        <h3>Tentang KDramaFlix</h3>
     </div>
 </div>
 
-<!-- 2. FULLSCREEN SHORTS OVERLAY MODAL (VIDEO BERSIH) -->
-<div id="shortsOverlay">
+<!-- FULLSCREEN SHORTS OVERLAY MODAL -->
+<div id="shortsOverlay" class="ui-hidden">
     
-    <!-- AREA VIDEO (SANGAT BERSIH) -->
-    <div id="shortsVideoContainer" onclick="toggleShortsUI()">
-        <!-- Youtube Player Iframe -->
-        <div id="shortsYoutubePlayer"></div>
+    <!-- 1. VIDEO PLAYER (PALING BELAKANG / FULL) -->
+    <div id="shortsYoutubePlayer"></div>
 
-        <!-- OVERLAY IKLAN SHOPEE -->
-        <div id="shopeeAdOverlay" class="shopee-ad-overlay" style="display: none;" onclick="event.stopPropagation()">
-            <div class="shopee-ad-box">
-                <span class="ad-badge-tag"><i class="fa-solid fa-bag-shopping"></i> Rekomendasi</span>
-                <button class="close-ad-btn" onclick="closeShopeeAd()"><i class="fa-solid fa-xmark"></i></button>
-                
-                <img id="adProductImg" class="shopee-product-img" src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop" alt="Produk Shopee">
-                <div id="adProductTitle" class="shopee-ad-title">Spesial Promo Drama Korea!</div>
-                <div id="adProductDesc" class="shopee-ad-desc">Dapatkan diskon eksklusif merchandise & snack impor Korea favoritmu di Shopee!</div>
-                
-                <a id="adShopeeLink" href="#" target="_blank" class="btn-shopee-buy" onclick="closeShopeeAd()">
-                    <i class="fa-solid fa-cart-shopping"></i> CEK PROMO SHOPEE
-                </a>
-            </div>
+    <!-- 2. TOMBOL KEMBALI MELAYANG -->
+    <div id="floatingBackBtn" onclick="closeShortsPlayer()">
+        <i class="fa-solid fa-arrow-left"></i>
+    </div>
+
+    <!-- 3. AREA KETUK UNTUK MENAMPILKAN/MENYEMBUNYIKAN UI -->
+    <!-- Div transparan ini menutupi video agar saat diketuk, UI muncul/hilang -->
+    <div style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:1000000;" onclick="toggleShortsUI()"></div>
+
+    <!-- 4. OVERLAY IKLAN SHOPEE -->
+    <div id="shopeeAdOverlay" class="shopee-ad-overlay" style="display: none;">
+        <div class="shopee-ad-box">
+            <span class="ad-badge-tag"><i class="fa-solid fa-bag-shopping"></i> Rekomendasi</span>
+            <button class="close-ad-btn" onclick="closeShopeeAd()"><i class="fa-solid fa-xmark"></i></button>
+            
+            <img id="adProductImg" class="shopee-product-img" src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=400&auto=format&fit=crop" alt="Produk Shopee">
+            <div id="adProductTitle" class="shopee-ad-title">Spesial Promo Drama Korea!</div>
+            <div id="adProductDesc" class="shopee-ad-desc">Dapatkan diskon eksklusif merchandise & snack impor Korea favoritmu di Shopee!</div>
+            
+            <a id="adShopeeLink" href="#" target="_blank" class="btn-shopee-buy" onclick="closeShopeeAd()">
+                <i class="fa-solid fa-cart-shopping"></i> CEK PROMO SHOPEE
+            </a>
         </div>
     </div>
 
-    <!-- AREA BAWAH UI (INFO & TOMBOL) -->
+    <!-- 5. BOTTOM UI (INFO & TOMBOL - TERSEMBUNYI DEFAULT) -->
     <div id="shortsBottomUI">
-        <div class="shorts-header-row">
-            <button class="btn-back-shorts" onclick="closeShortsPlayer()">
-                <i class="fa-solid fa-arrow-left"></i> Kembali
+        <div class="shorts-action-row">
+            <button class="btn-action-circle" onclick="toggleShortsLike(this)">
+                <i class="fa-solid fa-heart"></i>
             </button>
-            <div class="shorts-action-row">
-                <button class="btn-action-circle" onclick="toggleShortsLike(this)">
-                    <i class="fa-solid fa-heart"></i>
-                </button>
-                <button class="btn-action-circle" onclick="copyCurrentShortsLink()">
-                    <i class="fa-solid fa-share-nodes"></i>
-                </button>
-            </div>
+            <button class="btn-action-circle" onclick="copyCurrentShortsLink()">
+                <i class="fa-solid fa-share-nodes"></i>
+            </button>
         </div>
 
         <span id="shortsGenre" style="display:inline-block; background:var(--accent-color); color:#fff; font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; margin-bottom:8px;">Genre</span>
@@ -635,7 +603,6 @@
 // =========================================================================
 const DEFAULT_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVYkJJbDC1TpB4TzvYFzkfp4uBzYpXaqwYIARbBvqBkbtRSqz_2Olo07_tgvkwQj-Uft3CGkUvsB47/pub?output=csv"; 
 
-// Data default jika spreadsheet belum diisi kolom iklan_detik
 let daftarDrama = [
     {
         id: "queen_of_tears",
@@ -645,7 +612,7 @@ let daftarDrama = [
         cover: "https://images.unsplash.com/photo-1518676599626-5cd8c2d678a2?q=80&w=400&auto=format&fit=crop",
         videoId: "7XO6zMvG00g",
         shopeeUrl: "https://shope.ee/contoh1",
-        iklanDetik: [10, 30] // Default: Iklan muncul di detik 10 dan 30
+        iklanDetik: [10, 30] 
     },
     {
         id: "lovely_runner",
@@ -655,19 +622,18 @@ let daftarDrama = [
         cover: "https://images.unsplash.com/photo-1536440136628-849c177e76a1?q=80&w=400&auto=format&fit=crop",
         videoId: "S6KsSUcu3Y8",
         shopeeUrl: "https://shope.ee/contoh2",
-        iklanDetik: [15] // Default: Iklan muncul di detik 15
+        iklanDetik: [15] 
     }
 ];
 
-// STATE MANAGEMENT
 let currentPlayingItem = null;
 let player = null;
 let isPlayerReady = false;
 let adCheckInterval = null;
-let iklanYangSudahMuncul = []; // Melacak iklan mana yang sudah tampil
+let iklanYangSudahMuncul = []; 
 
 // =========================================================================
-// UTILITIES
+// UTILITIES & UI LOGIC
 // =========================================================================
 function showToast(msg) {
     const toast = document.getElementById("toastNotice");
@@ -722,32 +688,24 @@ function onPlayerStateChange(event) {
 }
 
 // =========================================================================
-// LOGIKA IKLAN SHOPEE BERKALI-KALI
+// LOGIKA IKLAN SHOPEE
 // =========================================================================
 function startAdMonitor() {
     clearInterval(adCheckInterval);
-    
     adCheckInterval = setInterval(() => {
         if (player && player.getCurrentTime && currentPlayingItem && currentPlayingItem.shopeeUrl) {
             let currentTime = player.getCurrentTime();
-            let jadwalIklan = currentPlayingItem.iklanDetik || []; // Ambil array jadwal iklan
+            let jadwalIklan = currentPlayingItem.iklanDetik || []; 
 
-            // Cek apakah waktu saat ini sudah melewati salah satu jadwal iklan
             for (let i = 0; i < jadwalIklan.length; i++) {
                 let waktuTarget = jadwalIklan[i];
-                
-                // Jika waktu video >= target, DAN iklan di target ini belum pernah muncul
                 if (currentTime >= waktuTarget && !iklanYangSudahMuncul.includes(waktuTarget)) {
-                    
-                    iklanYangSudahMuncul.push(waktuTarget); // Tandai sudah muncul
-                    
+                    iklanYangSudahMuncul.push(waktuTarget); 
                     if (player && player.pauseVideo) player.pauseVideo();
                     
-                    // Tampilkan iklan
                     document.getElementById("adShopeeLink").href = currentPlayingItem.shopeeUrl;
                     document.getElementById("shopeeAdOverlay").style.display = "flex";
-                    
-                    break; // Hentikan loop, tampilkan satu iklan dulu
+                    break; 
                 }
             }
         }
@@ -759,6 +717,9 @@ function closeShopeeAd() {
     if (player && player.playVideo) player.playVideo();
 }
 
+// =========================================================================
+// RENDER & OPEN PLAYER
+// =========================================================================
 function renderHorizontalCatalog() {
     const container = document.getElementById("dramaHorizontalList");
     container.innerHTML = "";
@@ -785,7 +746,7 @@ function openShortsPlayer(dramaId) {
     if (!drama) return;
 
     currentPlayingItem = drama;
-    iklanYangSudahMuncul = []; // Reset riwayat iklan setiap ganti video
+    iklanYangSudahMuncul = []; 
     closeShopeeAd();
 
     document.getElementById("shortsTitle").innerText = drama.title;
@@ -793,24 +754,36 @@ function openShortsPlayer(dramaId) {
     document.getElementById("shortsDesc").innerText = drama.synopsis;
 
     const overlay = document.getElementById("shortsOverlay");
-    overlay.style.display = "flex";
-    overlay.classList.remove("ui-hidden");
+    overlay.style.display = "block";
+    
+    // KUNCI PERBAIKAN 1: Langsung sembunyikan UI agar Full Video
+    overlay.classList.add("ui-hidden");
     
     document.body.style.overflow = "hidden"; 
 
     if (player && isPlayerReady && player.loadVideoById) {
         player.loadVideoById(drama.videoId);
     }
-    showToast(`Memutar: ${drama.title}`);
 }
 
 function closeShortsPlayer() {
     const overlay = document.getElementById("shortsOverlay");
     overlay.style.display = "none";
     document.body.style.overflow = "auto";
-    if (player && player.stopVideo) player.stopVideo();
+    
     clearInterval(adCheckInterval);
     closeShopeeAd();
+
+    // KUNCI PERBAIKAN 2: Mematikan suara & video secara total
+    if (player && isPlayerReady) {
+        try {
+            player.pauseVideo();       // Pause dulu
+            player.stopVideo();        // Stop video
+            player.loadVideoById('');  // Trik memuat video kosong untuk mematikan audio HP sepenuhnya
+        } catch(e) {
+            console.log("Player error on close:", e);
+        }
+    }
 }
 
 function toggleShortsUI() {
@@ -842,7 +815,7 @@ function copyCurrentShortsLink() {
 }
 
 // =========================================================================
-// FETCH DATA & INIT
+// FETCH DATA
 // =========================================================================
 async function fetchGoogleSheetsData(csvUrl) {
     try {
@@ -865,30 +838,23 @@ async function fetchGoogleSheetsData(csvUrl) {
                 if (regex.lastIndex >= lines[i].length) break;
             }
 
-            // Tangkap kolom ke-9 (index 8) yaitu iklan_detik
             const [id, title, genre, cover, synopsis, , video_url, shopee_url, iklan_detik_str] = row;
             if (!id || !title) continue;
 
-            // Proses string jadwal iklan (contoh: "10, 30, 60" menjadi array angka [10, 30, 60])
             let jadwalIklan = [];
             if (iklan_detik_str) {
-                jadwalIklan = iklan_detik_str.split(',')
-                    .map(num => parseInt(num.trim()))
-                    .filter(num => !isNaN(num) && num > 0);
+                jadwalIklan = iklan_detik_str.split(',').map(num => parseInt(num.trim())).filter(num => !isNaN(num) && num > 0);
             } else {
-                // Fallback: Jika kolom di spreadsheet kosong, default ke detik 30
                 jadwalIklan = [30]; 
             }
 
             parsedList.push({
-                id: id, 
-                title: title, 
-                genre: genre || "K-Drama",
+                id: id, title: title, genre: genre || "K-Drama",
                 cover: cover || "https://images.unsplash.com/photo-1518676599626-5cd8c2d678a2?q=80&w=400",
                 synopsis: synopsis || "Sinopsis drama shorts.",
                 videoId: parseYouTubeId(video_url || ""),
                 shopeeUrl: shopee_url || "",
-                iklanDetik: jadwalIklan // Simpan array waktu iklan
+                iklanDetik: jadwalIklan 
             });
         }
         if (parsedList.length > 0) {
