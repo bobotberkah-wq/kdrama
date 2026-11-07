@@ -424,7 +424,7 @@
 // =========================================================================
 const DEFAULT_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVYkJJbDC1TpB4TzvYFzkfp4uBzYpXaqwYIARbBvqBkbtRSqz_2Olo07_tgvkwQj-Uft3CGkUvsB47/pub?output=csv"; 
 
-// Data Fallback jika Spreadsheet gagal dimuat
+// Data Fallback
 let daftarDrama = [
     {
         id: "queen", title: "Queen of Tears", genre: "Romance, Drama",
@@ -446,7 +446,7 @@ let adMuncul = [];
 let isVideoOpenViaHistory = false;
 
 // =========================================================================
-// HANDLING TOMBOL BACK BAWAAN HP (HISTORY API)
+// HANDLING TOMBOL BACK BAWAAN HP
 // =========================================================================
 window.addEventListener('popstate', function(event) {
     if (isVideoOpenViaHistory) {
@@ -495,42 +495,43 @@ function openShorts(id) {
     const overlay = document.getElementById("shortsOverlay");
     overlay.style.display = "block";
     
-    // KUNCI: Sembunyikan UI agar video langsung bersih
     overlay.classList.add("ui-hidden");
-    
     document.body.style.overflow = "hidden"; 
 
-    // Tambahkan history agar tombol back HP tidak menutup browser
     if (!isVideoOpenViaHistory) {
         history.pushState({ videoOpen: true }, "");
         isVideoOpenViaHistory = true;
     }
 
-    // Menggunakan Iframe biasa (Bebas Error YouTube API di APK)
+    // =========================================================
+    // PERBAIKAN TOTAL: Menggunakan Youtube-nocookie.com
+    // =========================================================
     const playerContainer = document.getElementById('shortsYoutubePlayer');
     playerContainer.innerHTML = ''; 
+    
     const iframe = document.createElement('iframe');
     
-    // Parameter: autoplay, rel=0 (tanpa rekomendasi), playsinline, dan cc_load_policy=0 (matikan subtitle)
-    iframe.src = `https://www.youtube.com/embed/${item.videoId}?autoplay=1&rel=0&playsinline=1&cc_load_policy=0`;
-    iframe.allow = "autoplay; encrypted-media; picture-in-picture";
-    iframe.allowFullscreen = true;
+    // Menggunakan youtube-nocookie agar tidak diblokir oleh WebView APK
+    iframe.src = `https://www.youtube-nocookie.com/embed/${item.videoId}?autoplay=1&rel=0&playsinline=1&cc_load_policy=0&enablejsapi=1`;
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    iframe.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture');
+    iframe.setAttribute('allowfullscreen', 'true');
     
     playerContainer.appendChild(iframe);
 
     startAdMonitor();
 }
 
-// Fungsi jika video ditutup lewat TOMBOL KACA di layar
 function tutupVideoViaTombol() {
     if (isVideoOpenViaHistory) {
-        history.back(); // Memicu event 'popstate' yang akan memanggil tutupVideoSaja()
+        history.back(); 
     } else {
         tutupVideoSaja();
     }
 }
 
-// Fungsi inti mematikan video
 function tutupVideoSaja() {
     const overlay = document.getElementById("shortsOverlay");
     overlay.style.display = "none";
@@ -539,7 +540,6 @@ function tutupVideoSaja() {
     clearInterval(adInterval);
     closeAd();
 
-    // Hentikan video total dengan mengosongkan iframe
     const playerContainer = document.getElementById('shortsYoutubePlayer');
     playerContainer.innerHTML = '';
     
@@ -552,7 +552,7 @@ function toggleUI() {
 }
 
 // =========================================================================
-// LOGIKA IKLAN SHOPEE (Timer Manual)
+// IKLAN SHOPEE (Timer)
 // =========================================================================
 function startAdMonitor() {
     clearInterval(adInterval);
@@ -579,11 +579,11 @@ function startAdMonitor() {
 
 function closeAd() {
     document.getElementById("shopeeAdOverlay").style.display = "none";
-    if (currentItem) startAdMonitor(); // Lanjutkan timer untuk iklan berikutnya
+    if (currentItem) startAdMonitor(); 
 }
 
 // =========================================================================
-// FITUR TAMBAHAN (LIKE & SHARE)
+// FITUR LAINNYA
 // =========================================================================
 function toggleLike(btn) {
     const icon = btn.querySelector("i");
@@ -613,7 +613,7 @@ function showToast(msg) {
 }
 
 // =========================================================================
-// FETCH DATA DARI GOOGLE SPREADSHEET
+// FETCH DATA SPREADSHEET
 // =========================================================================
 function parseYT(url) {
     if (!url) return "";
@@ -647,7 +647,7 @@ async function loadSheets() {
 
             let iklan = [];
             if (iklanStr) iklan = iklanStr.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n) && n > 0);
-            else iklan = [30]; // Default iklan jika kolom kosong
+            else iklan = [30];
 
             list.push({
                 id, title, genre: genre || "K-Drama", cover, 
@@ -662,7 +662,6 @@ async function loadSheets() {
     } catch (e) { console.log("Error fetch:", e); }
 }
 
-// Mulai aplikasi
 window.onload = () => {
     renderGrid();
     loadSheets();
