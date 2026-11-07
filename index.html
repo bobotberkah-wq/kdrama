@@ -178,6 +178,12 @@
             z-index: 1;
         }
 
+        #shortsYoutubePlayer iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
         /* TOMBOL KEMBALI MELAYANG KACA */
         #floatingBackBtn {
             position: absolute;
@@ -412,10 +418,13 @@
 
 <div id="toastNotice"><i class="fa-solid fa-circle-check"></i> <span id="toastMsg">Notifikasi</span></div>
 
-<script src="https://www.youtube.com/iframe_api"></script>
 <script>
+// =========================================================================
+// KONFIGURASI UTAMA
+// =========================================================================
 const DEFAULT_SHEETS_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQVYkJJbDC1TpB4TzvYFzkfp4uBzYpXaqwYIARbBvqBkbtRSqz_2Olo07_tgvkwQj-Uft3CGkUvsB47/pub?output=csv"; 
 
+// Data Fallback jika Spreadsheet gagal dimuat
 let daftarDrama = [
     {
         id: "queen", title: "Queen of Tears", genre: "Romance, Drama",
@@ -432,28 +441,22 @@ let daftarDrama = [
 ];
 
 let currentItem = null;
-let player = null;
-let isReady = false;
 let adInterval = null;
 let adMuncul = [];
-
-// Variabel untuk melacak history browser
 let isVideoOpenViaHistory = false;
 
-// ==========================================
+// =========================================================================
 // HANDLING TOMBOL BACK BAWAAN HP (HISTORY API)
-// ==========================================
+// =========================================================================
 window.addEventListener('popstate', function(event) {
-    // Jika video sedang terbuka, maka fungsi ini akan jalan saat tombol back HP ditekan
     if (isVideoOpenViaHistory) {
-        // Tutup video secara paksa tanpa mengganggu history browser lagi
         tutupVideoSaja();
     }
 });
 
-// ==========================================
-// RENDER & UI
-// ==========================================
+// =========================================================================
+// RENDER KATALOG
+// =========================================================================
 function renderGrid() {
     const grid = document.getElementById("dramaGrid");
     grid.innerHTML = "";
@@ -475,45 +478,9 @@ function renderGrid() {
     });
 }
 
-// ==========================================
-// PLAYER YOUTUBE
-// ==========================================
-function onYouTubeIframeAPIReady() {
-    player = new YT.Player('shortsYoutubePlayer', {
-        height: '100%', width: '100%',
-        playerVars: { 
-            'autoplay': 1, 'rel': 0, 'playsinline': 1,
-            'modestbranding': 1, 'controls': 1, 'origin': window.location.origin,
-            'cc_load_policy': 0, 'cc_lang_pref': 'off', 'iv_load_policy': 3 
-        },
-        events: {
-            'onReady': () => { isReady = true; },
-            'onStateChange': onState
-        }
-    });
-}
-
-function matikanSubtitle() {
-    if (player && isReady && typeof player.unloadModule === 'function') {
-        try {
-            player.unloadModule("captions");
-            player.unloadModule("cc");
-        } catch(e) {}
-    }
-}
-
-function onState(e) {
-    if (e.data === YT.PlayerState.PLAYING) {
-        startAdMonitor();
-        matikanSubtitle();
-    } else {
-        clearInterval(adInterval);
-    }
-}
-
-// ==========================================
-// LOGIKA BUKA / TUTUP VIDEO (DENGAN HISTORY)
-// ==========================================
+// =========================================================================
+// LOGIKA BUKA & TUTUP VIDEO
+// =========================================================================
 function openShorts(id) {
     const item = daftarDrama.find(d => d.id === id);
     if (!item) return;
@@ -527,34 +494,43 @@ function openShorts(id) {
 
     const overlay = document.getElementById("shortsOverlay");
     overlay.style.display = "block";
+    
+    // KUNCI: Sembunyikan UI agar video langsung bersih
     overlay.classList.add("ui-hidden");
     
     document.body.style.overflow = "hidden"; 
 
-    // KUNCI PERBAIKAN: Tambahkan riwayat ke browser
+    // Tambahkan history agar tombol back HP tidak menutup browser
     if (!isVideoOpenViaHistory) {
         history.pushState({ videoOpen: true }, "");
         isVideoOpenViaHistory = true;
     }
 
-    if (player && isReady) {
-        player.loadVideoById(item.videoId);
-        setTimeout(matikanSubtitle, 500); 
-    }
+    // Menggunakan Iframe biasa (Bebas Error YouTube API di APK)
+    const playerContainer = document.getElementById('shortsYoutubePlayer');
+    playerContainer.innerHTML = ''; 
+    const iframe = document.createElement('iframe');
+    
+    // Parameter: autoplay, rel=0 (tanpa rekomendasi), playsinline, dan cc_load_policy=0 (matikan subtitle)
+    iframe.src = `https://www.youtube.com/embed/${item.videoId}?autoplay=1&rel=0&playsinline=1&cc_load_policy=0`;
+    iframe.allow = "autoplay; encrypted-media; picture-in-picture";
+    iframe.allowFullscreen = true;
+    
+    playerContainer.appendChild(iframe);
+
+    startAdMonitor();
 }
 
 // Fungsi jika video ditutup lewat TOMBOL KACA di layar
 function tutupVideoViaTombol() {
     if (isVideoOpenViaHistory) {
-        // Gunakan history.back() agar browser mundur selangkah (menghapus history yang tadi ditambahkan)
-        // Ini akan memicu event 'popstate' di atas, yang kemudian memanggil tutupVideoSaja()
-        history.back();
+        history.back(); // Memicu event 'popstate' yang akan memanggil tutupVideoSaja()
     } else {
         tutupVideoSaja();
     }
 }
 
-// Fungsi inti untuk menutup video dan mematikan suara
+// Fungsi inti mematikan video
 function tutupVideoSaja() {
     const overlay = document.getElementById("shortsOverlay");
     overlay.style.display = "none";
@@ -563,15 +539,10 @@ function tutupVideoSaja() {
     clearInterval(adInterval);
     closeAd();
 
-    if (player && isReady) {
-        try {
-            player.pauseVideo();
-            player.stopVideo();
-            player.loadVideoById(''); 
-        } catch(e) {}
-    }
+    // Hentikan video total dengan mengosongkan iframe
+    const playerContainer = document.getElementById('shortsYoutubePlayer');
+    playerContainer.innerHTML = '';
     
-    // Reset status
     isVideoOpenViaHistory = false;
     currentItem = null;
 }
@@ -580,25 +551,27 @@ function toggleUI() {
     document.getElementById("shortsOverlay").classList.toggle("ui-hidden");
 }
 
-// ==========================================
-// IKLAN SHOPEE
-// ==========================================
+// =========================================================================
+// LOGIKA IKLAN SHOPEE (Timer Manual)
+// =========================================================================
 function startAdMonitor() {
     clearInterval(adInterval);
+    let detikBerjalan = 0;
+    
     adInterval = setInterval(() => {
-        if (player && player.getCurrentTime && currentItem && currentItem.shopeeUrl) {
-            let time = player.getCurrentTime();
-            let jadwal = currentItem.iklanDetik || [];
+        if (!currentItem || !currentItem.shopeeUrl) return;
+        
+        detikBerjalan++;
+        let jadwal = currentItem.iklanDetik || [];
 
-            for (let target of jadwal) {
-                if (time >= target && !adMuncul.includes(target)) {
-                    adMuncul.push(target);
-                    if (player.pauseVideo) player.pauseVideo();
-                    
-                    document.getElementById("adLink").href = currentItem.shopeeUrl;
-                    document.getElementById("shopeeAdOverlay").style.display = "flex";
-                    break; 
-                }
+        for (let target of jadwal) {
+            if (detikBerjalan >= target && !adMuncul.includes(target)) {
+                adMuncul.push(target);
+                clearInterval(adInterval);
+
+                document.getElementById("adLink").href = currentItem.shopeeUrl;
+                document.getElementById("shopeeAdOverlay").style.display = "flex";
+                break; 
             }
         }
     }, 1000);
@@ -606,12 +579,12 @@ function startAdMonitor() {
 
 function closeAd() {
     document.getElementById("shopeeAdOverlay").style.display = "none";
-    if (player && player.playVideo) player.playVideo();
+    if (currentItem) startAdMonitor(); // Lanjutkan timer untuk iklan berikutnya
 }
 
-// ==========================================
-// FITUR LAINNYA
-// ==========================================
+// =========================================================================
+// FITUR TAMBAHAN (LIKE & SHARE)
+// =========================================================================
 function toggleLike(btn) {
     const icon = btn.querySelector("i");
     if (icon.style.color === "rgb(255, 42, 85)") {
@@ -639,6 +612,9 @@ function showToast(msg) {
     setTimeout(() => t.classList.remove("show"), 2500);
 }
 
+// =========================================================================
+// FETCH DATA DARI GOOGLE SPREADSHEET
+// =========================================================================
 function parseYT(url) {
     if (!url) return "";
     if (/^[a-zA-Z0-9_-]{11}$/.test(url)) return url;
@@ -671,7 +647,7 @@ async function loadSheets() {
 
             let iklan = [];
             if (iklanStr) iklan = iklanStr.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n) && n > 0);
-            else iklan = [30];
+            else iklan = [30]; // Default iklan jika kolom kosong
 
             list.push({
                 id, title, genre: genre || "K-Drama", cover, 
@@ -686,6 +662,7 @@ async function loadSheets() {
     } catch (e) { console.log("Error fetch:", e); }
 }
 
+// Mulai aplikasi
 window.onload = () => {
     renderGrid();
     loadSheets();
